@@ -4,7 +4,7 @@ Routes and views for the flask application.
 
 from datetime import datetime
 from flask import render_template, flash, redirect, request, session, url_for
-from werkzeug.urls import url_parse
+from urllib.parse import urlparse  # ✅ FIXED: replaces werkzeug.urls.url_parse
 from config import Config
 from FlaskWebProject import app, db
 from FlaskWebProject.forms import LoginForm, PostForm
@@ -13,8 +13,14 @@ from FlaskWebProject.models import User, Post
 import msal
 import uuid
 
+<<<<<<< HEAD
 # ------------------ APP STARTUP ------------------
 app.logger.info("✅ Flask application started successfully and is running on Azure.")
+=======
+# Blob storage image source
+imageSourceUrl = 'https://' + app.config['BLOB_ACCOUNT'] + '.blob.core.windows.net/' + app.config['BLOB_CONTAINER'] + '/'
+
+>>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
 
 imageSourceUrl = 'https://' + app.config['BLOB_ACCOUNT'] + '.blob.core.windows.net/' + app.config['BLOB_CONTAINER'] + '/'
 
@@ -32,7 +38,11 @@ def home():
         imageSource=imageSourceUrl
     )
 
+<<<<<<< HEAD
 # ------------------ NEW POST ------------------
+=======
+
+>>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
 @app.route('/new_post', methods=['GET', 'POST'])
 @login_required
 def new_post():
@@ -55,8 +65,13 @@ def new_post():
 @app.route('/post/<int:id>', methods=['GET', 'POST'])
 @login_required
 def post(id):
+<<<<<<< HEAD
     post = Post.query.get_or_404(id)
     form = PostForm(obj=post)
+=======
+    post = Post.query.get_or_404(int(id))
+    form = PostForm(formdata=request.form, obj=post)
+>>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
     if form.validate_on_submit():
         file = request.files.get('image_path')
         post.save_changes(form, file, current_user.id)
@@ -70,6 +85,7 @@ def post(id):
         imageSource=imageSourceUrl
     )
 
+<<<<<<< HEAD
 # ------------------ DELETE POST ------------------
 @app.route('/post/<int:id>/delete', methods=['POST'])
 @login_required
@@ -99,6 +115,9 @@ def remove_image(id):
     return redirect(url_for('post', id=id))
 
 # ------------------ LOGIN ------------------
+=======
+
+>>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -112,10 +131,11 @@ def login():
             app.logger.warning(f"Failed login attempt for username: {form.username.data}")
             flash('Invalid username or password')
             return redirect(url_for('login'))
+
         login_user(user, remember=form.remember_me.data)
         app.logger.info(f"User '{user.username}' logged in successfully.")
         next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
+        if not next_page or urlparse(next_page).netloc != '':
             next_page = url_for('home')
         return redirect(next_page)
 
@@ -123,6 +143,7 @@ def login():
     auth_url = _build_auth_url(scopes=Config.SCOPE, state=session["state"])
     return render_template('login.html', title='Sign In', form=form, auth_url=auth_url)
 
+<<<<<<< HEAD
 # ------------------ MICROSOFT LOGIN REDIRECT ------------------
 @app.route(Config.REDIRECT_PATH)
 def authorized():
@@ -183,3 +204,26 @@ def _build_msal_app(cache=None, authority=None):
 def _build_auth_url(authority=None, scopes=None, state=None):
     # TODO: Return MSAL auth request URL
     return None
+=======
+
+@app.route(Config.REDIRECT_PATH)
+def authorized():
+    if request.args.get('state') != session.get("state"):
+        return redirect(url_for("home"))
+
+    if "error" in request.args:
+        return render_template("auth_error.html", result=request.args)
+
+    if request.args.get('code'):
+        cache = _load_cache()
+        result = _build_msal_app(cache=cache).acquire_token_by_authorization_code(
+            request.args['code'],
+            scopes=Config.SCOPE,
+            redirect_uri=url_for('authorized', _external=True)
+        )
+
+        if "error" in result:
+            return render_template("auth_error.html", result=result)
+
+        session["user"] = re
+>>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
