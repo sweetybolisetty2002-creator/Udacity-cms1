@@ -16,7 +16,6 @@ import uuid
 <<<<<<< HEAD
 # ------------------ APP STARTUP ------------------
 app.logger.info("✅ Flask application started successfully and is running on Azure.")
-=======
 # Blob storage image source
 imageSourceUrl = 'https://' + app.config['BLOB_ACCOUNT'] + '.blob.core.windows.net/' + app.config['BLOB_CONTAINER'] + '/'
 
@@ -40,7 +39,7 @@ def home():
 
 <<<<<<< HEAD
 # ------------------ NEW POST ------------------
-=======
+
 
 >>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
 @app.route('/new_post', methods=['GET', 'POST'])
@@ -68,7 +67,7 @@ def post(id):
 <<<<<<< HEAD
     post = Post.query.get_or_404(id)
     form = PostForm(obj=post)
-=======
+
     post = Post.query.get_or_404(int(id))
     form = PostForm(formdata=request.form, obj=post)
 >>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
@@ -115,7 +114,6 @@ def remove_image(id):
     return redirect(url_for('post', id=id))
 
 # ------------------ LOGIN ------------------
-=======
 
 >>>>>>> 649eddf9ab3510bf3cbfcd71969b8fb66c7fe9e5
 @app.route('/login', methods=['GET', 'POST'])
@@ -204,7 +202,7 @@ def _build_msal_app(cache=None, authority=None):
 def _build_auth_url(authority=None, scopes=None, state=None):
     # TODO: Return MSAL auth request URL
     return None
-=======
+
 
 @app.route(Config.REDIRECT_PATH)
 def authorized():
