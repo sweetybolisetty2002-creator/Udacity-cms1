@@ -7,6 +7,7 @@ import string, random
 from werkzeug.utils import secure_filename
 from flask import flash
 
+# Azure Blob configuration
 blob_container = app.config['BLOB_CONTAINER']
 blob_service = BlockBlobService(
     account_name=app.config['BLOB_ACCOUNT'],
@@ -14,6 +15,7 @@ blob_service = BlockBlobService(
 )
 
 def id_generator(size=32, chars=string.ascii_uppercase + string.digits):
+    """Generate random ID for blob filenames"""
     return ''.join(random.choice(chars) for _ in range(size))
 
 # -------------------- USER MODEL --------------------
@@ -22,20 +24,22 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    email = db.Column(db.String(150), unique=True)  # MS login
-    ms_id = db.Column(db.String(150), unique=True)  # MS login
+    ms_id = db.Column(db.String(150), unique=True)  # Microsoft login ID
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return f"<User {self.username}>"
 
     def set_password(self, password):
+        """Hashes the user password"""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """Checks hashed password"""
         return check_password_hash(self.password_hash, password)
 
 @login.user_loader
 def load_user(id):
+    """Flask-Login user loader"""
     return User.query.get(int(id))
 
 # -------------------- POST MODEL --------------------
@@ -43,7 +47,7 @@ class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150))
-    subtitle = db.Column(db.String(255))  # New subtitle field
+    subtitle = db.Column(db.String(255))
     author = db.Column(db.String(75))
     body = db.Column(db.String(800))
     image_path = db.Column(db.String(100))
@@ -51,7 +55,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
-        return '<Post {}>'.format(self.title)
+        return f"<Post {self.title}>"
 
     # -------------------- SAVE/UPDATE POST --------------------
     def save_changes(self, form, file=None, userId=None, new=False):
@@ -63,15 +67,16 @@ class Post(db.Model):
             if userId:
                 self.user_id = userId
 
-            # Handle image upload safely
-            if file and hasattr(file, 'filename') and file.filename != '':
+            # Handle image upload
+            if file and hasattr(file, 'filename') and file.filename:
                 filename = secure_filename(file.filename)
                 fileextension = filename.rsplit('.', 1)[1]
-                Randomfilename = id_generator()
-                filename = Randomfilename + '.' + fileextension
+                random_filename = id_generator()
+                filename = f"{random_filename}.{fileextension}"
+
                 try:
                     blob_service.create_blob_from_stream(blob_container, filename, file)
-                    # Delete old image if exists
+                    # Delete old image if it exists
                     if self.image_path:
                         blob_service.delete_blob(blob_container, self.image_path)
                     self.image_path = filename
