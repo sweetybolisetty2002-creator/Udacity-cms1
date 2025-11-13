@@ -7,9 +7,9 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key')
 
     # Azure Blob Storage configuration
-    BLOB_ACCOUNT = os.environ.get('BLOB_ACCOUNT', 'ENTER_STORAGE_ACCOUNT_NAME')
-    BLOB_STORAGE_KEY = os.environ.get('BLOB_STORAGE_KEY', 'ENTER_BLOB_STORAGE_KEY')
-    BLOB_CONTAINER = os.environ.get('BLOB_CONTAINER', 'ENTER_IMAGES_CONTAINER_NAME')
+    BLOB_ACCOUNT = os.environ.get('BLOB_ACCOUNT', 'image11')
+    BLOB_STORAGE_KEY = os.environ.get('BLOB_STORAGE_KEY', 'STORAGE_KEY_NAME')
+    BLOB_CONTAINER = os.environ.get('BLOB_CONTAINER', 'images')
 
     # SQL Server configuration
     SQL_SERVER = os.environ.get('SQL_SERVER', 'ENTER_SQL_SERVER_NAME.database.windows.net')
