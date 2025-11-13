@@ -26,7 +26,7 @@
                 <td>{{ post.author }}</td>
                 <td>
                     {% if post.image_path %}
-                        <img src="{{ url_for('static', filename='uploads/' ~ post.image_path) }}" 
+                        <img src="https://{{ config.BLOB_ACCOUNT }}.blob.core.windows.net/{{ config.BLOB_CONTAINER }}/{{ post.image_path }}" 
                              alt="Post Image" style="max-width: 100px; max-height: 80px;">
                     {% else %}
                         No Image
@@ -43,6 +43,10 @@
                         <button type="submit" class="btn btn-sm btn-warning">Remove Image</button>
                     </form>
                     {% endif %}
+                    <form action="{{ url_for('upload_image', post_id=post.id) }}" method="post" enctype="multipart/form-data" style="display:inline; margin-top: 5px;">
+                        <input type="file" name="file" required style="display:inline-block;">
+                        <button type="submit" class="btn btn-sm btn-success">Upload Image</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
