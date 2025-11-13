@@ -20,9 +20,16 @@
                 <th scope="row">{{ post.id }} </th>
                 <td>{{ post.title }}</td>
                 <td>{{ post.author }}</td>
-                <td>{{ post.image_path != None }}</td>
+                <td>
+        {% if post.image %}
+            <img src="{{ url_for('static', filename='uploads/' + post.image) }}" 
+                 alt="Article Image" width="120" height="80">
+        {% else %}
+            No image
+        {% endif %}
+    </td>
                 <td><a href="{{ url_for('post', id=post.id) }}">Edit Post</a></td>
-            </tr>
+</tr>
             {% endfor %}
         </table>
     </div>
