@@ -35,13 +35,13 @@ def new_post():
     form = PostForm(request.form)
     if form.validate_on_submit():
         post = Post()
-        post.save_changes(form, request.files['image_path'], current_user.id, new=True)
+        post.save_changes(form, request.files['image_name'], current_user.id, new=True)
         app.logger.info("User %s has published a new post", current_user.username)
         return redirect(url_for('home'))
     return render_template(
         'post.html',
         title='Create Post',
-        imageSource=imageSourceUrl,
+        imageSource=imagename,
         form=form
     )
 
@@ -52,13 +52,13 @@ def post(id):
     post = Post.query.get(int(id))
     form = PostForm(formdata=request.form, obj=post)
     if form.validate_on_submit():
-        post.save_changes(form, request.files['image_path'], current_user.id)
+        post.save_changes(form, request.files['image_name'], current_user.id)
         app.logger.info("User %s updated post with ID %s", id, current_user.username)
         return redirect(url_for('home'))
     return render_template(
         'post.html',
         title='Edit Post',
-        imageSource=imageSourceUrl,
+        imageSource=imagename,
         form=form
     )
 
